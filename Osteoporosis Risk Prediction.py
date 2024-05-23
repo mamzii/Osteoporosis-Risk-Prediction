@@ -8,8 +8,6 @@ df.head()
 
 df.shape
 df.info()
-<<<<<<< HEAD
-=======
 
 df.isna().sum()
 
@@ -184,7 +182,7 @@ grid = GridSearchCV(svc, param_grid, verbose=3, cv = 5, n_jobs=-1)
 grid.fit(X_train,y_train)
 print(grid.best_params_)
 
-svc = SVC(C = 1, degree = 2, gamma = 'auto', random_state = 0)
+svc = SVC(C = 1, degree = 2, gamma = 'auto', random_state = 0 , kernel = 'linear')
 svc.fit(X_train, y_train)
 print('train accuracy: ', svc.score(X_train, y_train))
 svc_pred = svc.predict(X_test)
@@ -212,7 +210,7 @@ plt.figure(figsize=(10,5))
 sns.barplot(x = models, y = model_accuracy).set_title('model accuracy')
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.metrics import root_mean_squared_error
+# from sklearn.metrics import root_mean_squared_error
 models = ['Logistic regression', 'random farest', 'decision tree', 'svm']
 fig, ax = plt.subplots(2,2,figsize = (15,15))
 mae = [mean_absolute_error(y_test, lr_pred), mean_absolute_error(y_test, rfc_pred), mean_absolute_error(y_test, dtree_pred), mean_absolute_error(y_test, svc_pred)]
@@ -225,7 +223,53 @@ sns.barplot(x = models, y = mse, ax = ax[0,1]).set_title('MSE')
 
 sns.barplot(x = models, y = r2, ax = ax[1,0]).set_title('R2')
 
+# feature importance graph for Logistic Regression
+fig,ax = plt.subplots(2,2, figsize = (20,20))
+coeff = list(logmodel.coef_[0])
+labels = list(df.drop('Osteoporosis',axis = 1).columns)
+features = pd.DataFrame()
+features['Features'] = labels
+features['Importance'] = coeff
+features.sort_values(by = 'Importance', ascending=True, inplace=True)
+features = features.set_index('Features')
+features.plot(kind = 'barh',ax = ax[0,0]).set_title('feature importance of logistic regression')
 
+#Feature Importance graph for Random Forest
+coeff = list(rfc.feature_importances_)
+labels = list(df.drop('Osteoporosis',axis = 1).columns)
+features = pd.DataFrame()
+features['Features'] = labels
+features['Importance'] = coeff
+features.sort_values(by = 'Importance', ascending=True, inplace=True)
+features = features.set_index('Features')
+features.plot(kind = 'barh',ax = ax[0,1]).set_title('feature importance of random farest')
 
+#Feature Importance graph for Decision Tree
+coeff = list(dtree.feature_importances_)
+labels = list(df.drop('Osteoporosis',axis = 1).columns)
+features = pd.DataFrame()
+features['Features'] = labels
+features['Importance'] = coeff
+features.sort_values(by = 'Importance', ascending=True, inplace=True)
+features = features.set_index('Features')
+features.plot(kind = 'barh',ax = ax[1,0]).set_title('feature importance of decision tree')
 
->>>>>>> 1c19853 (delete the file)
+coeff = list(svc.coef_[0])
+labels = list(df.drop('Osteoporosis',axis = 1).columns)
+features = pd.DataFrame()
+features['Features'] = labels
+features['Importance'] = coeff
+features.sort_values(by = 'Importance', ascending=True, inplace=True)
+features = features.set_index('Features')
+features.plot(kind = 'barh',ax = ax[1,1]).set_title('feature importance of svm')
+
+# In[] conclusion
+# I analyzed the dataset, performed exploratory data analysis, and developed predictive models using logistic regression, random forest
+# classifier, decision tree classifier, and support vector classifier and evaluated the models using confusion matrix, accuracy, precision,
+# recall, and F1 score metrics certain factors like Age, Hormona Changes, Medical Conditions, Medications, Lifestyle and nutrition are 
+# responsible for the risk of osteoporosis. Patients between 20-40 years of age have lower risk of osteoporosis
+# Patients who have undergone hormonal changes, have medical conditions, consume medications, have lower body weight, calcium and vitamin D levels,
+# and have sedentary lifestyle have higher risk of osteoporosis.
+# Among machine learning algorithms  Decision Tree Classifier model gave the best results in
+# comparison to others, with nearly 87% accuracy.
+
